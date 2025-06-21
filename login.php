@@ -1,62 +1,78 @@
-<!DOCTYPE html>
-<html lang="ru">
-  <head>
-    <meta charset="utf-8">
-    <meta name="vieport" content="width=device-width, initial-scale=1.0">
-    <title>web_vuln</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link rel=”stylesheet” href=”https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css” />
-    
-    <link rel="stylesheet" href="css/style.css">
-  </head>
-  <body>
-    <div class="container">
-        <div class="row">
-            <div class="reg_text">
-                <h1>Авторизуйтесь, пожалуйста :)</h1>
-            </div>  
-        </div>
-        <div class="row">
-            <div class="registration">
-                <form method="POST" action="login.php">
-                    <div class="row register_form"><input class="form" type="text" name="login" placeholder="Login"></div>
-                    <div class="row register_form"><input class="form" type="password" name="password" placeholder="Password"></div>
-                    <button type="submit" class="btn_reg" name="submit">Продолжить</button>
-                </form>
-            </div>
-        </div>
-    </div>
-  </body>
-</html>
-
 <?php
-require_once('db.php');
-$link = mysqli_connect('127.0.0.1', 'root', '1111', 'gvozdik_db');
+// Прямые параметры подключения к БД
+$host = 'db';
+$user = 'root';
+$password = '1111';
+$dbname = 'gvozdik_db';
 
+// Основная логика авторизации
 if (isset($_COOKIE['User'])) {
     header("Location: profile.php");
+    exit;
 }
 
 if (isset($_POST['submit'])) {
     $username = $_POST['login'];
     $pass = $_POST['password'];
     
-    if (!$username || !$pass) die ('Пожалуйста введите все значения!');
+    if (!$username || !$pass) die('Пожалуйста введите все значения!');
     
+    $link = mysqli_connect($host, $user, $password, $dbname);
     $sql = "SELECT * FROM users WHERE username='$username' AND pass='$pass'";
-
     $result = mysqli_query($link, $sql);
 
-
-
     if (mysqli_num_rows($result) == 1) {
-        setcookie("User", $username, time()+7200);
+        setcookie("User", $username, time() + 7200, "/");
         header('Location: profile.php');
+        exit;
     } 
     else {
-        echo "не правильное имя или пароль";
+        $error = "Неверное имя пользователя или пароль";
     }
 }
 ?>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Авторизация</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .container { margin-top: 50px; max-width: 500px; }
+        .card { border: none; box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15); }
+        .card-header { background: #0d6efd; color: white; font-weight: bold; }
+        .btn-primary { background: #0d6efd; border: none; }
+        .form-control:focus { border-color: #86b7fe; box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header text-center py-3">
+                <h4>Авторизация</h4>
+            </div>
+            <div class="card-body">
+                <?php if(isset($error)): ?>
+                    <div class="alert alert-danger"><?= $error ?></div>
+                <?php endif; ?>
+                <form method="POST" action="login.php">
+                    <div class="mb-3">
+                        <label class="form-label">Логин</label>
+                        <input type="text" name="login" class="form-control" placeholder="Ваш логин" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Пароль</label>
+                        <input type="password" name="password" class="form-control" placeholder="Ваш пароль" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-2" name="submit">Войти</button>
+                </form>
+            </div>
+            <div class="card-footer text-center py-3">
+                <small>Нет аккаунта? <a href="registration.php">Зарегистрироваться</a></small>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

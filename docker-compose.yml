@@ -2,25 +2,24 @@ version: '3.8'
 
 services:
   web:
-    build: ./web
+    build: .
     ports:
       - "8000:80"
-    environment:
-      DB_HOST: db
-      DB_USER: root
-      DB_PASSWORD: 1111
-      DB_NAME: gvozdik_db
+    volumes:
+      - .:/var/www/html
     depends_on:
       - db
-    volumes:
-      - ./web/public:/var/www/html
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html
 
   db:
     image: mysql:8.0
-    command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: 1111
       MYSQL_DATABASE: gvozdik_db
+    command: --default-authentication-plugin=mysql_native_password
     volumes:
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
