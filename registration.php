@@ -1,11 +1,9 @@
 <?php
-// Прямые параметры подключения к БД
 $host = 'db';
 $user = 'root';
 $password = '1111';
 $dbname = 'gvozdik_db';
 
-// Создание БД и таблицы при первом запуске
 $link = mysqli_connect($host, $user, $password, $dbname);
 if ($link) {
     mysqli_query($link, "CREATE DATABASE IF NOT EXISTS $dbname");
@@ -18,7 +16,6 @@ if ($link) {
     )");
 }
 
-// Основная логика регистрации
 if (isset($_COOKIE['User'])) {
     header("Location: login.php");
     exit;

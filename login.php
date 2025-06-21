@@ -1,11 +1,9 @@
 <?php
-// Прямые параметры подключения к БД
 $host = 'db';
 $user = 'root';
 $password = '1111';
 $dbname = 'gvozdik_db';
 
-// Основная логика авторизации
 if (isset($_COOKIE['User'])) {
     header("Location: profile.php");
     exit;
@@ -19,10 +17,11 @@ if (isset($_POST['submit'])) {
     
     $link = mysqli_connect($host, $user, $password, $dbname);
     $sql = "SELECT * FROM users WHERE username='$username' AND pass='$pass'";
-    $result = mysqli_query($link, $sql);
+    $result = mysqli_query($link, $sql) or die("Ошибка в SQL запросе: " . mysqli_error($link));
 
-    if (mysqli_num_rows($result) == 1) {
-        setcookie("User", $username, time() + 7200, "/");
+    if (mysqli_num_rows($result) >= 1) {
+        $row = mysqli_fetch_assoc($result);
+        setcookie("User", $row['username'], time() + 7200, "/");
         header('Location: profile.php');
         exit;
     } 
@@ -31,6 +30,8 @@ if (isset($_POST['submit'])) {
     }
 }
 ?>
+
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>

@@ -1,16 +1,13 @@
 <?php
-// Прямые параметры подключения к БД (для примера, хотя здесь не используются)
 $host = 'db';
 $user = 'root';
 $password = '1111';
 $dbname = 'gvozdik_db';
 
-// Проверка авторизации
 if (!isset($_COOKIE['User'])) {
     header("Location: login.php");
     exit;
 }
-
 $username = $_COOKIE['User'];
 ?>
 <!DOCTYPE html>
@@ -72,7 +69,7 @@ $username = $_COOKIE['User'];
                 <h2>Добро пожаловать!</h2>
             </div>
             <div class="profile-body text-center">
-                <h1>Привет, <?= htmlspecialchars($username) ?>!</h1>
+                <h1>Привет, <?= $username ?>!</h1>
                 <p>Вы успешно авторизовались в системе</p>
                 <a href="login.php?logout=1" class="logout-btn">Выйти из аккаунта</a>
             </div>
